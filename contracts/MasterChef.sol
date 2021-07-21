@@ -339,6 +339,7 @@ contract ERC20 is Context, IERC20 {
     string private _name;
     string private _symbol;
     uint8 private _decimals;
+    uint256 private _cap;
 
     /**
      * @dev Sets the values for {name} and {symbol}, initializes {decimals} with
@@ -353,6 +354,7 @@ contract ERC20 is Context, IERC20 {
         _name = name;
         _symbol = symbol;
         _decimals = 18;
+        _cap = 2500000e18;
     }
 
     /**
@@ -368,6 +370,13 @@ contract ERC20 is Context, IERC20 {
      */
     function symbol() public view returns (string memory) {
         return _symbol;
+    }
+    
+    /**
+     * @dev Returns the cap on the token's total supply.
+     */
+    function cap() public view virtual returns (uint256) {
+        return _cap;
     }
 
     /**
@@ -523,6 +532,7 @@ contract ERC20 is Context, IERC20 {
      */
     function _mint(address account, uint256 amount) internal virtual {
         require(account != address(0), "ERC20: mint to the zero address");
+        require(totalSupply() + amount <= cap(), "ERC20Capped: cap exceeded");
 
         _beforeTokenTransfer(address(0), account, amount);
 
